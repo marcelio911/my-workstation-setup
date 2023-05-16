@@ -7,7 +7,7 @@ sudo apt-get install -y openjdk-11-jdk android-sdk
 
 wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
 
-wget https://raw.githubusercontent.com/Shashikant86/vagrant-ansible-appium/master/android.rules
+# wget https://raw.githubusercontent.com/Shashikant86/vagrant-ansible-appium/master/android.rules
 
 
  # Set environment variables
@@ -24,6 +24,7 @@ wget https://raw.githubusercontent.com/Shashikant86/vagrant-ansible-appium/maste
     echo 'export PATH=$PATH:$ANDROID_HOME/platform-tools/systrace' >> ~/.bashrc
     
     sudo cp  ~/.bashrc /root/.bashrc
+    sudo su -c "source /root/.bashrc"
     unzip commandlinetools-linux-9477386_latest.zip
     sudo \mv cmdline-tools/bin/* $ANDROID_HOME/tools/bin
     sudo \cp android.rules /etc/udev/rule.d/51-android.rules
