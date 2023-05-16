@@ -1,0 +1,19 @@
+- hosts: all
+  tasks:
+    - name: Execute script.sh with arguments
+      copy: src=setup.sh dest=/home/vagrant/ 
+      shell: ~/setup.sh
+
+    # - name: install packages
+    #   apt: name={{item}} state=present
+    #   with_items: 
+    #     - nodejs
+    #     - curl
+    #     - wget
+    #     - git
+    #     - unzip
+    #     - yarn
+      
+    
+
+    

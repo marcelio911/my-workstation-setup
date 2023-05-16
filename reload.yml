@@ -1,0 +1,7 @@
+- name: Reload Vagrant virtual machine
+  hosts: all
+  tasks:
+    - name: Reload Vagrant virtual machine
+      command: vagrant reload
+      args:
+        chdir: ./Vagrantfile
