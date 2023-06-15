@@ -1,8 +1,21 @@
-- hosts: all
+- hosts: android-workstation
   tasks:
-    - name: Execute script.sh with arguments
-      copy: src=setup.sh dest=/home/vagrant/ 
-      shell: ~/setup.sh
+    - name: Copyfile android-setup.sh to remote machine
+      copy: src=android-setup.sh dest=/home/vagrant/ 
+
+
+    - name: Add permission to android-setup.sh
+      shell: chmod +x  /home/vagrant/android-setup.sh
+
+    # - name: Execute setup.sh with arguments
+    #   shell: /home/vagrant/setup.sh
+    #   register: script_output
+    #   changed_when: false
+
+    # - name: Display script output
+    #   debug:
+    #     var: script_output.stdout_lines
+    
 
     # - name: install packages
     #   apt: name={{item}} state=present

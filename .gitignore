@@ -1,2 +1,5 @@
 /.vagrant
 /data
+
+db-and-web-workstation/.vagrant
+db-and-web-workstation/data

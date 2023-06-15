@@ -31,5 +31,17 @@ echo "* 0.0.0.0/0 ::/0" > /etc/vbox/networks.conf
 cat /etc/vbox/networks.conf
 ```
 
+#### Add permissions to use USB device into Virtualbox
+```
+sudo usermod -a -G vboxusers $USER
+reboot
+```
 
+#### After return reboot view list devices connected
+```
+VBoxManage list usbhost
+```
+##### How to enable PORT in VM 
+
+- Use right/down statusbar into USB icon choice a list and check your device to preparing
 

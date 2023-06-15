@@ -1,0 +1,32 @@
+- hosts: web-host
+  tasks:
+    - name: Copyfile apache-setup.sh to remote machine
+      copy: src=apache-setup.sh dest=/home/vagrant/ 
+
+
+    - name: Add permission to apache-setup.sh
+      shell: chmod +x  /home/vagrant/apache-setup.sh
+
+    - name: Execute setup.sh with arguments
+      shell: /home/vagrant/apache-setup.sh
+      register: script_output
+      changed_when: false
+
+    - name: Display script output
+      debug:
+        var: script_output.stdout_lines
+    
+
+    # - name: install packages
+    #   apt: name={{item}} state=present
+    #   with_items: 
+    #     - nodejs
+    #     - curl
+    #     - wget
+    #     - git
+    #     - unzip
+    #     - yarn
+      
+    
+
+    

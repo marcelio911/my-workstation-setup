@@ -12,13 +12,22 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  # config.vm.box = "base"
-  # config.vm.box = "ubuntu/focal64"  # Choose an appropriate base box for your VM
-  
-  # config.vm.define "db" do |db|
-	# 	db.vm.box = "mysql"
-	# end
+  config.vm.box = "base"
+  config.vm.box = "ubuntu/focal64"  # Choose an appropriate base box for your VM
 
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+
+  config.ssh.private_key_path = "~/.ssh/id_rsa"
+  config.ssh.insert_key = true
+  config.ssh.guest_port = 22
+  config.ssh.extra_args = "-o StrictHostKeyChecking=no"
+  config.ssh.keep_alive = true
+  config.ssh.keys_only = true    
+  config.ssh.forward_agent = false
+  config.ssh.dsa_authentication = false
+  config.vm.boot_timeout = 90000
+  
   config.vm.define "workstation" do |workstation|
 		workstation.vm.box = "fasmat/ubuntu2204-desktop"
     workstation.vm.box_version = "22.0509.1"
@@ -27,26 +36,20 @@ Vagrant.configure("2") do |config|
     workstation.vm.box_check_update = true
     workstation.vm.synced_folder "./data", "/vagrant_data", type: "virtualbox", create: true
 
-    workstation.vm.network "private_network", ip: "192.168.50.155", bridge: "wlp0s20f3"
+    workstation.vm.network "private_network", ip: "192.168.50.155", type: "dhcp", auto_config: true
+    workstation.vm.network "public_network", bridge: "enp4s0", auto_config: true
+
+    workstation.vm.network "private_network", ip: "10.1.90.122", bridge: "wlp0s20f3", auto_config: true
 
     # SSH configuration
-    workstation.ssh.username = "vagrant"
-    workstation.ssh.password = "vagrant"
-    workstation.ssh.private_key_path = "~/.ssh/id_rsa"
-    workstation.ssh.insert_key = true
-    workstation.ssh.host = "192.168.0.32"
-    workstation.ssh.guest_port = 22
-    workstation.ssh.extra_args = "-o StrictHostKeyChecking=no"
-    workstation.ssh.keep_alive = true
-    workstation.ssh.keys_only = true
+   
+    workstation.ssh.host = "10.1.90.122"
     workstation.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", auto_correct: true
-    workstation.ssh.forward_agent = false
-    workstation.ssh.dsa_authentication = false
     
     workstation.vm.provider "virtualbox" do |vb|
       vb.gui = true
-      vb.memory = 4096  # Set the desired memory for the VM
-      vb.cpus = 2      # Set the desired number of CPUs for the VM
+      vb.memory = 6*1024  # Set the desired memory for the VM
+      vb.cpus = 3      # Set the desired number of CPUs for the VM
       vb.customize ["modifyvm", :id, "--nic1", "bridged"]
       vb.customize ["modifyvm", :id, "--bridgeadapter1", "wlp0s20f3"]
 
@@ -57,14 +60,10 @@ Vagrant.configure("2") do |config|
     end
    
     workstation.vm.provision "shell", inline: <<-SHELL
-    # Update the package repositories
+      # Update the package repositories
     
-  SHELL
-
+    SHELL
 
 	end
 
-    # Install any other necessary packages and dependencies
-    # ...
- 
 end

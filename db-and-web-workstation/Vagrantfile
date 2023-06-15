@@ -1,0 +1,84 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "base"
+  config.vm.box = "ubuntu/focal64"  # Choose an appropriate base box for your VM
+
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+
+  config.ssh.private_key_path = "~/.ssh/id_rsa"
+  config.ssh.insert_key = true
+  config.ssh.guest_port = 22
+  config.ssh.extra_args = "-o StrictHostKeyChecking=no"
+  config.ssh.keep_alive = true
+  config.ssh.keys_only = true    
+  config.ssh.forward_agent = false
+  config.ssh.dsa_authentication = false
+  # config.vm.boot_timeout = 90000
+  
+  
+  
+  config.vm.define "db_config" do |db_config|
+		# db_config.vm.box = "mysql"
+    db_config.vm.hostname = "mysql-host"
+    db_config.vm.network "private_network", ip: "10.1.90.120", bridge: "wlp0s20f3", auto_config: true
+
+    db_config.vm.network "forwarded_port", guest: 3306, host: 3306, id: "mysql", auto_correct: true
+    db_config.vbguest.auto_update = false
+
+    db_config.ssh.host = "10.42.0.56"
+    db_config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", auto_correct: true
+    
+    db_config.vm.network "private_network", ip: "192.168.50.153", type: "dhcp", auto_config: true
+    db_config.vm.network "public_network", bridge: "enp4s0", auto_config: true
+
+
+    db_config.vm.provider "virtualbox" do |vbdb|
+      vbdb.gui = true
+      vbdb.memory = 1024  # Set the desired memory for the VM
+      vbdb.cpus = 1      # Set the desired number of CPUs for the VM
+      vbdb.customize ["modifyvm", :id, "--nic1", "bridged"]
+      vbdb.customize ["modifyvm", :id, "--bridgeadapter1", "wlp0s20f3"]
+    end
+	end
+
+  config.vm.define "web_config" do |web_config|
+    # web_config.vm.box = "apache"
+    web_config.vm.hostname = "web-host"
+    web_config.vm.network "private_network", ip: "10.1.90.121", bridge: "wlp0s20f3", auto_config: true
+    web_config.vm.network "forwarded_port", guest: 80, host: 8080, id: "http", auto_correct: true
+    web_config.vbguest.auto_update = true
+    web_config.ssh.host = "10.42.0.56"
+    web_config.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh", auto_correct: true
+    web_config.vm.network "private_network", ip: "192.168.50.154", type: "dhcp", auto_config: true
+    web_config.vm.network "public_network", bridge: "enp4s0", auto_config: true
+
+    web_config.vm.provider "virtualbox" do |vbweb|
+      vbweb.gui = true
+      vbweb.memory = 1024  # Set the desired memory for the VM
+      vbweb.cpus = 1      # Set the desired number of CPUs for the VM
+      vbweb.customize ["modifyvm", :id, "--nic1", "bridged"]
+      vbweb.customize ["modifyvm", :id, "--bridgeadapter1", "wlp0s20f3"]
+    end
+
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "initial_setup.yml"
+  end
+   
+   
+end
+
